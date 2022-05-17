@@ -6,8 +6,7 @@ app.set("view engine", "ejs");
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
-  "Link for Shortening URLs": "href='#'"
+  "9sm5xK": "http://www.google.com"
 };
 
 const bodyParser = require("body-parser");
@@ -40,13 +39,15 @@ app.get("/urls/new", (req, res) => {
 
 //Route with a parameter
 app.get("/urls/:shortURL", (req, res) => {
-
-  const templateVars = { shortURL: req.params.shortURL, longURL: req.params.longURL };
+let longURL = urlDatabase[shortURL]
+  const templateVars = { shortURL: req.params.shortURL, longURL: longURL };
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls", (req, res) => {
   console.log(req.body);  // Log the POST request body to the console
+  let shortURL = generateRandomString();
+  let longURL = req.body.longURL
   res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 
