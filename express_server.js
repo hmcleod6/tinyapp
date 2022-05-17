@@ -11,7 +11,7 @@ const urlDatabase = {
 };
 
 const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -41,7 +41,7 @@ app.get("/urls/new", (req, res) => {
 //Route with a parameter
 app.get("/urls/:shortURL", (req, res) => {
 
-  const templateVars = { shortURL: req.params.shortURL,longURL: req.params.longURL };
+  const templateVars = { shortURL: req.params.shortURL, longURL: req.params.longURL };
   res.render("urls_show", templateVars);
 });
 
@@ -51,5 +51,11 @@ app.post("/urls", (req, res) => {
 });
 
 function generateRandomString() {
-
+  let string = '';
+  let alphaNumerical = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  for (let i = 0; i < 6; i++) {
+    string += alphaNumerical.charAt(Math.floor(Math.random() *
+      alphaNumerical.length));
+  }
+  return string;
 }
