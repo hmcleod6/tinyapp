@@ -39,7 +39,9 @@ app.get("/urls/new", (req, res) => {
 
 //Route with a parameter
 app.get("/urls/:shortURL", (req, res) => {
-let longURL = urlDatabase[shortURL];
+let longURL = urlDatabase[req.params.shortURL];
+console.log(longURL)
+console.log(urlDatabase[req.params.shortURL])
   const templateVars = { shortURL: req.params.shortURL, longURL: longURL };
   res.render("urls_show", templateVars);
 });
@@ -49,11 +51,11 @@ app.post("/urls/new", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
-  res.redirect(`/urls/${longURL}`)
+  res.redirect(`http://localhost:8080/urls/${shortURL}`);
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
+  const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
 
