@@ -1,7 +1,9 @@
 const express = require("express");
+const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 8080;
 
+app.use(cookieParser());
 app.set("view engine", "ejs");
 
 const urlDatabase = {
@@ -69,6 +71,23 @@ app.post('/urls/:shortURL', (req, res) => {
   const shortLinkURL = req.params.shortURL;
   res.redirect(`/urls/${shortLinkURL}`);
 });
+
+app.post('/login', (req, res) => {
+  console.log("req ->", req);
+  res.cookie('username', req.body.username);
+  //  SHOULD SET A COOKIE NAMED USERNAME TO THE VALUE SUBMITTED VIA THE LOGIN FORM
+  // AFTER COOKIE HAS BEEN SET REDIRECT THE BROWSER
+  res.redirect(`/urls`);
+});
+
+
+const templateVars = {
+  username: req.cookies["username"],
+};
+res.render("urls_index", templateVars);
+res.render("urls_show", templateVars);
+res.render("urls_new", templateVars);
+
 
 function generateRandomString() {
   let string = '';
