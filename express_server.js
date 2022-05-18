@@ -10,6 +10,7 @@ const urlDatabase = {
 };
 
 const bodyParser = require("body-parser");
+const { response } = require("express");
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
@@ -39,9 +40,9 @@ app.get("/urls/new", (req, res) => {
 
 //Route with a parameter
 app.get("/urls/:shortURL", (req, res) => {
-let longURL = urlDatabase[req.params.shortURL];
-console.log(longURL)
-console.log(urlDatabase[req.params.shortURL])
+  let longURL = urlDatabase[req.params.shortURL];
+  console.log(longURL);
+  console.log(urlDatabase[req.params.shortURL]);
   const templateVars = { shortURL: req.params.shortURL, longURL: longURL };
   res.render("urls_show", templateVars);
 });
@@ -57,6 +58,11 @@ app.post("/urls/new", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
+});
+
+app.post('/urls/:shortURL/delete', (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  res.redirect('/urls');
 });
 
 function generateRandomString() {
