@@ -65,6 +65,11 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   res.redirect('/urls');
 });
 
+app.post('/urls/:shortURL', (req, res) => {
+  const shortLinkURL = req.params.shortURL;
+  res.redirect(`/urls/${shortLinkURL}`);
+});
+
 function generateRandomString() {
   let string = '';
   let alphaNumerical = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
