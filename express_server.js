@@ -32,12 +32,20 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { 
+    urls: urlDatabase,
+    username: req.cookies["username"]
+  };
+  console.log(req.cookies);
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = { 
+    urls: urlDatabase,
+    username: req.cookies["username"]
+  };
+  res.render("urls_new", templateVars);
 });
 
 //Route with a parameter
@@ -45,7 +53,10 @@ app.get("/urls/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
   console.log(longURL);
   console.log(urlDatabase[req.params.shortURL]);
-  const templateVars = { shortURL: req.params.shortURL, longURL: longURL };
+  const templateVars = { shortURL: req.params.shortURL, longURL: longURL, 
+    urls: urlDatabase,
+    username: req.cookies["username"]
+  };
   res.render("urls_show", templateVars);
 });
 
@@ -72,6 +83,11 @@ app.post('/urls/:shortURL', (req, res) => {
   res.redirect(`/urls/${shortLinkURL}`);
 });
 
+app.post('/logout', (req, res) => {
+  res.clearCookie("username");
+  res.redirect(`/urls`);
+});
+
 app.post('/login', (req, res) => {
   console.log("req ->", req);
   res.cookie('username', req.body.username);
@@ -79,15 +95,6 @@ app.post('/login', (req, res) => {
   // AFTER COOKIE HAS BEEN SET REDIRECT THE BROWSER
   res.redirect(`/urls`);
 });
-
-
-const templateVars = {
-  username: req.cookies["username"],
-};
-res.render("urls_index", templateVars);
-res.render("urls_show", templateVars);
-res.render("urls_new", templateVars);
-
 
 function generateRandomString() {
   let string = '';
