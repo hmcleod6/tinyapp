@@ -6,14 +6,26 @@ const PORT = 8080;
 app.use(cookieParser());
 app.set("view engine", "ejs");
 
+const bodyParser = require("body-parser");
+const { response } = require("express");
+app.use(bodyParser.urlencoded({ extended: true }));
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
-const bodyParser = require("body-parser");
-const { response } = require("express");
-app.use(bodyParser.urlencoded({ extended: true }));
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -101,6 +113,22 @@ app.post('/login', (req, res) => {
   res.cookie('username', req.body.username);
   //  SHOULD SET A COOKIE NAMED USERNAME TO THE VALUE SUBMITTED VIA THE LOGIN FORM
   // AFTER COOKIE HAS BEEN SET REDIRECT THE BROWSER
+  res.redirect(`/urls`);
+});
+
+app.post('/register', (req, res) => {
+    const newUserID = generateRandomString();
+    console.log(res);
+    users[`${newUserID}`] = {
+           "id": `${newUserID}`,
+           "email": `${req.body.username}`,
+           "password": `${req.body.password}`
+    };
+    res.cookie('user_id', newUserID);
+  // SHOULD ADD A NEW USER OBJECT TO THE GLOBAL USERS OBJECT
+  //USER OBJECT SHOULD INCLUDE THE USERS ID EMAIL AND PASSWORD
+  //USE GENERATE RANDOM STRING FOR USER ID
+  console.log(users);
   res.redirect(`/urls`);
 });
 
