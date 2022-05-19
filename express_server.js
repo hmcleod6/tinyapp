@@ -9,6 +9,8 @@ app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
 const { response } = require("express");
 app.use(bodyParser.urlencoded({ extended: true }));
+
+
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -20,12 +22,22 @@ const users = {
     email: "user@example.com", 
     password: "purple-monkey-dinosaur"
   },
- "user2RandomID": {
+  "user2RandomID": {
     id: "user2RandomID", 
     email: "user2@example.com", 
     password: "dishwasher-funk"
   }
 }
+const getUserByEmail = function (email, users) {
+  for (let lookFor in users) {
+    // console.log(users[lookFor])
+    if (users[lookFor].email === email) {
+      // console.log(users[lookFor].email);
+      return users[lookFor];
+    }
+  }
+}
+
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -44,38 +56,47 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  const userID = req.cookies["user_id"];
+  const user = users[userID];
   const templateVars = { 
     urls: urlDatabase,
-    username: req.cookies["username"]
+    user: user
   };
-  console.log(req.cookies);
+  // console.log(req.cookies);
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
+  const userID = req.cookies["user_id"];
+  const user = users[userID];
   const templateVars = { 
     urls: urlDatabase,
-    username: req.cookies["username"]
+    email: req.cookies["email"],
+    user: user
   };
   res.render("urls_new", templateVars);
 });
 
 app.get("/register", (req, res) => {
+  const userID = req.cookies["user_id"];
+  const user = users[userID];
   const templateVars = { 
     urls: urlDatabase,
-    username: req.cookies["username"]
+    user: user
   };
+  
   res.render("urls_register", templateVars);
 });
 
 //Route with a parameter
 app.get("/urls/:shortURL", (req, res) => {
+  const userID = req.cookies["user_id"];
+  const user = users[userID];
   let longURL = urlDatabase[req.params.shortURL];
   console.log(longURL);
   console.log(urlDatabase[req.params.shortURL]);
   const templateVars = { shortURL: req.params.shortURL, longURL: longURL, 
-    urls: urlDatabase,
-    username: req.cookies["username"]
+    urls: urlDatabase,  user: user
   };
   res.render("urls_show", templateVars);
 });
@@ -104,31 +125,32 @@ app.post('/urls/:shortURL', (req, res) => {
 });
 
 app.post('/logout', (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("email");
   res.redirect(`/urls`);
 });
 
 app.post('/login', (req, res) => {
-  console.log("req ->", req);
-  res.cookie('username', req.body.username);
-  //  SHOULD SET A COOKIE NAMED USERNAME TO THE VALUE SUBMITTED VIA THE LOGIN FORM
-  // AFTER COOKIE HAS BEEN SET REDIRECT THE BROWSER
+const user = getUserByEmail(req.body.email, users)
+if (user) {
+  res.cookie('id', user.id)
   res.redirect(`/urls`);
+} else {
+  res.redirect(`/urls`);
+}
 });
 
 app.post('/register', (req, res) => {
     const newUserID = generateRandomString();
-    console.log(res);
     users[`${newUserID}`] = {
            "id": `${newUserID}`,
-           "email": `${req.body.username}`,
+           "email": `${req.body.email}`,
            "password": `${req.body.password}`
     };
     res.cookie('user_id', newUserID);
-  // SHOULD ADD A NEW USER OBJECT TO THE GLOBAL USERS OBJECT
-  //USER OBJECT SHOULD INCLUDE THE USERS ID EMAIL AND PASSWORD
-  //USE GENERATE RANDOM STRING FOR USER ID
-  console.log(users);
+
+    console.log(req.body.email)
+
+
   res.redirect(`/urls`);
 });
 
