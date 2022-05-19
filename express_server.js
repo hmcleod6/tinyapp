@@ -8,6 +8,7 @@ app.set("view engine", "ejs");
 
 const bodyParser = require("body-parser");
 const { response } = require("express");
+const res = require("express/lib/response");
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
@@ -28,12 +29,16 @@ const users = {
     password: "dishwasher-funk"
   }
 };
-const getUserByEmail = function(email, users) {
+const getUserByLogin = function(email, users, password) {
   for (let lookFor in users) {
     // console.log(users[lookFor])
     if (users[lookFor].email === email) {
       // console.log(users[lookFor].email);
+      if (users[lookFor].password === password) {
+        console.log("it worked");
       return users[lookFor];
+      }
+
     }
   }
 };
@@ -125,21 +130,36 @@ app.post('/urls/:shortURL', (req, res) => {
   res.redirect(`/urls/${shortLinkURL}`);
 });
 
-app.post('/logout', (req, res) => {
-  res.clearCookie("email");
-  res.redirect(`/urls`);
+app.get('/login', (req, res) => {
+  const userID = req.cookies["user_id"];
+  const user = users[userID];
+  const templateVars = {
+    urls: urlDatabase,
+    user: user
+  };
+  res.render("urls_login", templateVars);
 });
 
 app.post('/login', (req, res) => {
-  const user = getUserByEmail(req.body.email, users);
-  if (user) {
-    res.cookie('id', user.id);
-    res.redirect(`/urls`);
+  const user = getUserByLogin(req.body.email, users, req.body.password);
+  console.log(user)
+  if (user === undefined) {
+    res.status(403)
+    res.send('User not found');
   } else {
+    res.cookie('user_id', user.id);
     res.redirect(`/urls`);
   }
 });
 
+app.post('/logout', (req, res) => {
+  res.clearCookie("user_id");
+  res.redirect(`/urls`);
+});
+app.get('/logout', (req, res) => {
+  res.clearCookie("user_id");
+  res.redirect(`/urls`);
+});
 app.post('/register', (req, res) => {
   if (req.body.email === '' || req.body.password === '') {
     res.status(400);
@@ -160,11 +180,7 @@ app.post('/register', (req, res) => {
       break
     }
   }
-
-
 console.log(users)
-
-
   res.redirect(`/urls`);
 });
 
