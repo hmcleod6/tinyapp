@@ -12,20 +12,18 @@
       </div>
     </div>
     <% if (!user) { %>
-
       <form method="POST" action="/login">
-        <label for="email">Email</label>
-        <input type="email" name="email" />
-        <button>Login</button>
-      </form>
-      <% } else { %>
-        <span>
-          Logged in as: <%= user.email %>
-        </span>
-        <form method="POST" action="/logout">
-          <button>Logout</button>
-        </form>
+      <a class="nav-item nav-link" href="/login">Login</a>
+    </form>
+    <form method="POST" action="/login">
+    <a class="nav-item nav-link" href="/register">Register</a>
+    </form>
+    <% } else { %>
+      <form method="POST" action="/logout">
+        <label>Logged In As: <%= user.email %></label>
+        <a class="nav-item nav-link" href="/logout">Logout</a>
+      </div>
+    </form>
         <% } %>
-
   </nav>
 </header>
