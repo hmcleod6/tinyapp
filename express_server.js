@@ -45,7 +45,9 @@ const getUserByLogin = function(email, users, password) {
     if (users[lookFor].email === email) {
       // console.log(users[lookFor].email);
       if (users[lookFor].password === password) {
+        if(bcrypt.compareSync(password, users[lookFor].password) === true) {
         return users[lookFor];
+      }
       }
 
     }
