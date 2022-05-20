@@ -12,21 +12,18 @@ const res = require("express/lib/response");
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-// const urlDatabase = {
-//   "b2xVn2": "http://www.lighthouselabs.ca",
-//   "9sm5xK": "http://www.google.com"
-// };
+//---- FUNCTIONS AND DATABASES
 
 const urlDatabase = {
-  b6UTxQ: {
-    longURL: "https://www.tsn.ca",
-    userID: "aJ48lW",
+  b2xVn2: {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "userRandomID"
   },
-  i3BoGr: {
+  9sm5xK: {
     longURL: "https://www.google.ca",
-    userID: "aJ48lW"
+    userID: "userRandomID"
   }
-}
+};
 
 const users = {
   "userRandomID": {
@@ -53,13 +50,14 @@ const getUserByLogin = function(email, users, password) {
   }
 };
 
-
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
-
+// SERVER ------
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
+});
+// -----------
+// ROUTES TO GET
+app.get("/", (req, res) => {
+  res.send("Hello!");
 });
 
 app.get("/urls.json", (req, res) => {
@@ -87,12 +85,6 @@ app.get("/urls", (req, res) => {
   // }
 });
 
-app.post("/urls", (req, res) => {
-  if (!user) {
-    res.redirect('/login')
-  }
-
-})
 
 app.get("/urls/new", (req, res) => {
   const userID = req.cookies["user_id"];
@@ -101,11 +93,10 @@ app.get("/urls/new", (req, res) => {
     urls: urlDatabase,
     email: req.cookies["email"],
     user: user
-  };
-  if (!req.cookies["user_id"])) {
-    res.redirect(401,'/login');
   }
-  else {
+  if (!req.cookies["user_id"]) {
+    res.redirect(401,'/login');
+  } else {
     res.render('urls_new', templateVars);
   }
 });
@@ -117,7 +108,7 @@ app.get("/register", (req, res) => {
     urls: urlDatabase,
     user: user
   };
-
+  
   res.render("urls_register", templateVars);
 });
 
@@ -133,33 +124,10 @@ app.get("/urls/:shortURL", (req, res) => {
   };
   res.render("urls_show", templateVars);
 });
-
-app.post("/urls/new", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  const shortURL = generateRandomString();
-  const longURL = req.body.longURL;
-  urlDatabase[shortURL] = {
-    longURL,
-    userID: req.cookie('user_id')
-  };
-  res.redirect(`http://localhost:8080/urls/${shortURL}`);
-});
-
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
-
-app.post('/urls/:shortURL/delete', (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect('/urls');
-});
-
-app.post('/urls/:shortURL', (req, res) => {
-  const shortLinkURL = req.params.shortURL;
-  res.redirect(`/urls/${shortLinkURL}`);
-});
-
 app.get('/login', (req, res) => {
   const userID = req.cookies["user_id"];
   const user = users[userID];
@@ -169,7 +137,6 @@ app.get('/login', (req, res) => {
   };
   res.render("urls_login", templateVars);
 });
-
 app.get('/urls/:userID', (req, res) => {
   let templateVars = {
     shortURL: req.params.userID,
@@ -183,6 +150,39 @@ app.get('/urls/:userID', (req, res) => {
     res.status(400);
   }
 })
+app.get('/logout', (req, res) => {
+  res.clearCookie("user_id");
+  res.redirect(`/urls`);
+});
+
+// ROUTES TO POST ------
+
+app.post("/urls", (req, res) => {
+  if (!user) {
+    res.redirect('/login')
+  }
+
+})
+app.post("/urls/new", (req, res) => {
+  console.log(req.body);  // Log the POST request body to the console
+  const shortURL = generateRandomString();
+  const longURL = req.body.longURL;
+  urlDatabase[shortURL] = {
+    longURL,
+    userID: req.cookie('user_id')
+  };
+  res.redirect(`http://localhost:8080/urls/${shortURL}`);
+});
+
+app.post('/urls/:shortURL/delete', (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  res.redirect('/urls');
+});
+
+app.post('/urls/:shortURL', (req, res) => {
+  const shortLinkURL = req.params.shortURL;
+  res.redirect(`/urls/${shortLinkURL}`);
+});
 
 app.post('/login', (req, res) => {
   const user = getUserByLogin(req.body.email, users, req.body.password);
@@ -197,10 +197,6 @@ app.post('/login', (req, res) => {
 });
 
 app.post('/logout', (req, res) => {
-  res.clearCookie("user_id");
-  res.redirect(`/urls`);
-});
-app.get('/logout', (req, res) => {
   res.clearCookie("user_id");
   res.redirect(`/urls`);
 });
