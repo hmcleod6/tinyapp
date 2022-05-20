@@ -61,15 +61,22 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  console.log(req)
+  console.log(req.body.user)
   const userID = req.cookies["user_id"];
   const user = users[userID];
   const templateVars = {
     urls: urlDatabase,
     user: user
   };
-  // console.log(req.cookies);
   res.render("urls_index", templateVars);
 });
+app.post("/urls", (req, res) => {
+  if (!user) {
+    res.redirect('/login')
+  }
+
+})
 
 app.get("/urls/new", (req, res) => {
   const userID = req.cookies["user_id"];
@@ -79,7 +86,12 @@ app.get("/urls/new", (req, res) => {
     email: req.cookies["email"],
     user: user
   };
-  res.render("urls_new", templateVars);
+  if (user) {
+    res.render('urls_new', templateVars);
+  }
+  else {
+    res.redirect(401,'/login');
+  }
 });
 
 app.get("/register", (req, res) => {
@@ -93,7 +105,6 @@ app.get("/register", (req, res) => {
   res.render("urls_register", templateVars);
 });
 
-//Route with a parameter
 app.get("/urls/:shortURL", (req, res) => {
   const userID = req.cookies["user_id"];
   const user = users[userID];
