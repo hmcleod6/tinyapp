@@ -2,6 +2,8 @@ const express = require("express");
 const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 8080;
+const bcrypt = require('bcryptjs');
+
 
 app.use(cookieParser());
 app.set("view engine", "ejs");
@@ -238,10 +240,11 @@ app.post('/register', (req, res) => {
       res.send('Email already in use!');
     } else {
       const newUserID = generateRandomString();
+      const hashedPassword = req.body.password
       users[`${newUserID}`] = {
         "id": `${newUserID}`,
         "email": `${req.body.email}`,
-        "password": `${req.body.password}`
+        "password": bcrypt.hashSync(password,10)
       };
       res.cookie('user_id', newUserID);
       break;
