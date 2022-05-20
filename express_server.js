@@ -19,7 +19,7 @@ const urlDatabase = {
     longURL: "http://www.lighthouselabs.ca",
     userID: "userRandomID"
   },
-  9sm5xK: {
+  s9m5xK: {
     longURL: "https://www.google.ca",
     userID: "userRandomID"
   }
@@ -62,9 +62,9 @@ function generateRandomString() {
 
 function findUsersURLS(id) {
   let usersURLS = {};
-  for (let shortURLS in urlsDatabase) {
+  for (let shortURLS in urlDatabase) {
     if (urlDatabase[shortURLS].userID === id) {
-      usersUrls[shortURLS] = urlDatabase[shortURLS];
+    usersURLS[shortURLS] = urlDatabase[shortURLS];
     }
   }
   return usersURLS;
