@@ -244,7 +244,7 @@ app.post('/register', (req, res) => {
       users[`${newUserID}`] = {
         "id": `${newUserID}`,
         "email": `${req.body.email}`,
-        "password": bcrypt.hashSync(password,10)
+        "password": bcrypt.hashSync(hashedPassword,10)
       };
       res.cookie('user_id', newUserID);
       break;
