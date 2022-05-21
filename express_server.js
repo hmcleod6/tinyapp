@@ -22,7 +22,7 @@ app.use(cookieSession({
 app.use(cookieParser());
 
 
-//---- FUNCTIONS AND DATABASES
+//---- DATABASES ----
 const salt = bcrypt.genSaltSync(10);
 const urlDatabase = {
   "b2xVn2": {
@@ -47,12 +47,7 @@ const users = {
   }
 };
 
-
-
-
-
-// -----------
-// ROUTES TO GET
+// ---- GET ---
 app.get("/", (req, res) => {
   if (doesCookieHaveUser(req.session.user_id, users)) {
     res.redirect("/login");
@@ -62,15 +57,15 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-    const userID = req.session.user_id;
-    const user = users[userID];
-    const urls = urlsForUser(userID, urlDatabase);
-    const templateVars = {
-      urls,
-      user
-    };
-    res.render('urls_index', templateVars);
-  });
+  const userID = req.session.user_id;
+  const user = users[userID];
+  const urls = urlsForUser(userID, urlDatabase);
+  const templateVars = {
+    urls,
+    user
+  };
+  res.render('urls_index', templateVars);
+});
 
 app.get("/urls/new", (req, res) => {
   if (!doesCookieHaveUser(req.session.user_id, users)) {
@@ -85,6 +80,7 @@ app.get("/urls/new", (req, res) => {
     res.render("urls_new", templateVars);
   }
 });
+
 app.get("/register", (req, res) => {
   if (!doesCookieHaveUser(req.session.user_id, users)) {
     const userID = req.session.user_id;
@@ -124,6 +120,7 @@ app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
+
 app.get("/login", (req, res) => {
   if (doesCookieHaveUser(req.session.user_id, users)) {
     res.redirect("/urls");
@@ -132,8 +129,9 @@ app.get("/login", (req, res) => {
       user: users[req.session.user_id],
     };
     res.render("urls_login", templateVars);
-  };
+  }
 });
+
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.userID,
@@ -148,7 +146,7 @@ app.get("/urls/:id", (req, res) => {
   }
 });
 
-// ROUTES TO POST ------
+// ---- POST ----
 
 app.post("/urls", (req, res) => {
   if (!req.session.used_id) {
@@ -182,10 +180,9 @@ app.post("/register", (req, res) => {
     req.session.user_id = newUserID;
     res.redirect("/urls");
   }
-  console.log(users);
 });
+
 app.post("/urls/new", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = {
@@ -194,6 +191,7 @@ app.post("/urls/new", (req, res) => {
   };
   res.redirect(`/urls/${shortURL}`);
 });
+
 app.post("/login", (req, res) => {
   let password = req.body.password;
   let userID = getUserByEmail(req.body.email, users);
@@ -210,23 +208,22 @@ app.post("/login", (req, res) => {
     res.status('Password does not match!');
     return;
   }
-  console.log(req.session.user_id);
   req.session.user_id = user.id;
-  console.log(userID);
   res.redirect("/urls");
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-let user = users[req.session.user_id];
-if (!user) {
-  res.send('You cannot delete a URL that does not belong to you. Please log in');
+  let user = users[req.session.user_id];
+  if (!user) {
+    res.send('You cannot delete a URL that does not belong to you. Please log in');
+    return;
+  }
+  const shortURL = req.params.shortURL;
+  delete urlDatabase[shortURL];
+  res.redirect('/urls');
   return;
-}
-const shortURL = req.params.shortURL;
-delete urlDatabase[shortURL]
-res.redirect('/urls')
-return;
 });
+
 app.post("/urls/:shortURL", (req, res) => {
   const user = users[req.session.user_id];
   if (!user) {
@@ -243,7 +240,6 @@ app.post("/urls/:shortURL", (req, res) => {
   return;
 });
 
-
 app.post("/urls/:id", (req, res) => {
   if (Object.keys(urlsForUser(req.session.user_id, urlDatabase) === req.params.id)) {
     urlDatabase[req.params.id].longURL = req.body.newURL;
@@ -254,11 +250,8 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-
-  console.log(req.session)
   req.session = null;
   res.redirect("/urls");
-  console.log(req.session)
   return;
 });
 
