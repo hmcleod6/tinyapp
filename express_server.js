@@ -186,13 +186,11 @@ app.post("/login", (req, res) => {
   if (!user) {
     res.status(403);
     res.send('Email not found');
-    return;
   }
 
   if (!bcrypt.compareSync(password, user.password)) {
     res.status(403);
     res.status('Password does not match!');
-    return;
   }
   req.session.user_id = user.id;
   res.redirect("/urls");
@@ -200,21 +198,18 @@ app.post("/login", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   let user = users[req.session.user_id];
+  const shortURL = req.params.shortURL;
   if (!user) {
     res.send('You cannot delete a URL that does not belong to you. Please log in');
-    return;
   }
-  const shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];
   res.redirect('/urls');
-  return;
 });
 
 app.post("/urls/:shortURL", (req, res) => {
   const user = users[req.session.user_id];
   if (!user) {
     res.send('This is not your URL to edit. Please login');
-    return;
   }
   const shortURL = req.params.shortURL;
   const editLongLink = req.body.longURL;
@@ -223,7 +218,6 @@ app.post("/urls/:shortURL", (req, res) => {
     user
   };
   res.redirect("/urls");
-  return;
 });
 
 app.post("/urls/:id", (req, res) => {
@@ -238,7 +232,6 @@ app.post("/urls/:id", (req, res) => {
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
-  return;
 });
 
 // SERVER ------
