@@ -100,19 +100,19 @@ app.get("/register", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   if (urlDatabase[req.params.shortURL]) {
+    const shortURL = req.params.shortURL;
+    const longURL = urlDatabase[req.params.shortURL].longURL;
+    const userID = urlDatabase[req.params.shortURL].userID;
+    const user = users[req.session.user_id];
     let templateVars = {
-      shortURL: req.params.shortURL,
-      longURL: urlDatabase[req.params.shortURL].longURL,
-      urlUserID: urlDatabase[req.params.shortURL].userID,
-      user: users[req.session.user_id],
+      shortURL,
+      longURL,
+      userID,
+      user,
     };
     res.render("urls_show", templateVars);
   } else {
-    res
-      .status(404)
-      .send(
-        "The short URL you entered does not correspond with a long URL at this time."
-      );
+    res.send("The short URL you entered does not exist.");
   }
 });
 
@@ -120,6 +120,8 @@ app.get("/u/:shortURL", (req, res) => {
   if (urlDatabase[req.params.shortURL]) {
     const longURL = urlDatabase[req.params.shortURL].longURL;
     res.redirect(longURL);
+  } else {
+    res.send("The short URL you entered does not yet exist.");
   }
 });
 
