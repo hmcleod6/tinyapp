@@ -10,6 +10,11 @@
   <div class="card text-center">
     <div class="card-header"></div>
     <div class="card-body">
+      <% if(!user) { %>
+        <div class="alert alert-danger" role="alert">
+          This is not your collection. Please login to view your collection.
+        </div>
+        <% } else { %>
       <h5 class="card-title">TinyURL for: <%= longURL %></h5>
       <p class="card-text">Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></p>
     </div>
@@ -24,7 +29,7 @@
       </form>
 
 
-
+<% } %>
 
 
 

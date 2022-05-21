@@ -15,14 +15,13 @@
       <form method="POST" action="/login">
       <a class="nav-item nav-link" href="/login">Login</a>
     </form>
-    <form method="POST" action="/login">
+    <form method="POST" action="/register">
     <a class="nav-item nav-link" href="/register">Register</a>
     </form>
     <% } else { %>
+      <label>Logged In As: <%= user.email %></label>
       <form method="POST" action="/logout">
-        <label>Logged In As: <%= user.email %></label>
-        <a class="nav-item nav-link" href="/logout">Logout</a>
-      </div>
+        <button type="logout" class="btn btn-outline-dark" style="margin: 1em">Logout</button>
     </form>
         <% } %>
   </nav>
