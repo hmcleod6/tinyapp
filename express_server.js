@@ -178,6 +178,16 @@ app.post("/register", (req, res) => {
   }
 });
 
+app.post("/urls/new", (req, res) => {
+  const shortURL = generateRandomString();
+  const longURL = req.body.longURL;
+  urlDatabase[shortURL] = {
+    longURL,
+    userID: req.session.user_id
+  };
+  res.redirect(`/urls/${shortURL}`);
+});
+
 app.post("/login", (req, res) => {
   let password = req.body.password;
   let userID = getUserByEmail(req.body.email, users);
@@ -190,7 +200,7 @@ app.post("/login", (req, res) => {
 
   if (!bcrypt.compareSync(password, user.password)) {
     res.status(403);
-    res.status('Password does not match!');
+    res.send('Password does not match!');
   }
   req.session.user_id = user.id;
   res.redirect("/urls");
@@ -198,10 +208,10 @@ app.post("/login", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   let user = users[req.session.user_id];
-  const shortURL = req.params.shortURL;
   if (!user) {
     res.send('You cannot delete a URL that does not belong to you. Please log in');
   }
+  const shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];
   res.redirect('/urls');
 });
