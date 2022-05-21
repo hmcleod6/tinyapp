@@ -8,6 +8,9 @@ const bodyParser = require("body-parser");
 const { response } = require("express");
 const res = require("express/lib/response");
 
+const { emailInUse, generateRandomString, urlsForUser, getUserByEmail, doesCookieHaveUser } = require('./helpers');
+
+
 app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -44,59 +47,10 @@ const users = {
   }
 };
 
-let emailInUse = function(email, userDatabase) {
-  for (let user in userDatabase) {
-    if (userDatabase[user].email === email) {
-      return true;
-    }
-  }
-  return false;
-};
 
-function generateRandomString() {
-  let string = '';
-  let alphaNumerical = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i = 0; i < 6; i++) {
-    string += alphaNumerical.charAt(Math.floor(Math.random() *
-      alphaNumerical.length));
-  }
-  return string;
-}
-function urlsForUser(id, urlDatabase) {
-  let usersURLS = {};
-  for (let shortURLS in urlDatabase) {
-    if (urlDatabase[shortURLS].userID === id) {
-      usersURLS[shortURLS] = urlDatabase[shortURLS];
-    }
-  }
-  return usersURLS;
-}
-const getUserByEmail = function(email, users) {
-  for (let userID in users) {
-    const user = users[userID];
-    if (user.email === email) {
-      return user.id;
-    }
-  }
-  return null;
-};
 
-const doesCookieHaveUser = function(currentCookie, userDatabase) {
-  for (let currentUser in userDatabase) {
-    if (currentCookie === currentUser) {
-      return true;
-    }
-  } return false;
 
-};
 
-const returnUserIDFromEmail = function(email, userDatabase) {
-  for (let userFound in userDatabase) {
-    if (userDatabase[userFound].email === email) {
-      return userDatabase[userFound].id;
-    }
-  }
-};
 // -----------
 // ROUTES TO GET
 app.get("/", (req, res) => {
