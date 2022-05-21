@@ -23,9 +23,11 @@
       </thead>
       <tbody>
       <% if (!user) { %>
-        <div class="alert alert-danger" role="alert">
-          Please login or register to see URLs
-        </div>
+        <div class="card text-center">
+          <div class="card-body">
+              <div class="alert alert-danger" role="alert">
+                Please login or register to see URLs
+              </div>
           <% } else { %>
 
         <% for(let url in urls) { %>
